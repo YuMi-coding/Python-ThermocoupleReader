@@ -59,7 +59,7 @@ class ThermocoupleReader:
 
             for i in range(0, len(temp_data), 2):
                 raw_bytes = temp_data[i : i + 2]
-                raw = int.from_bytes(raw_bytes, byteorder="little")
+                raw = int.from_bytes(raw_bytes, byteorder="little", signed=True)
                 temperatures.append(raw / 10.0 if raw != 28000 else None)
 
             return temperatures
