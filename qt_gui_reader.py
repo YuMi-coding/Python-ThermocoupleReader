@@ -40,6 +40,9 @@ def available_ports() -> List[str]:
     ports = [p.device for p in list_ports.comports()]
     return ports
 
+def default_csv_name(test_id: int) -> str:
+    ts = datetime.now().strftime("%Y-%m-%d_%H-%M-%S")
+    return f"thermocouple_{ts}_test{test_id}.csv"
 
 @dataclass
 class Sample:
@@ -113,6 +116,10 @@ class MainWindow(QMainWindow):
         self.setWindowTitle("Thermocouple Reader (Qt)")
         self.resize(1100, 700)
 
+        self.launch_ts = datetime.now()
+        self.default_csv = default_csv_name(1)
+        self.test_index = 1
+
         self.thread: Optional[QThread] = None
         self.worker: Optional[ReaderWorker] = None
 
@@ -159,6 +166,7 @@ class MainWindow(QMainWindow):
 
         path_row = QHBoxLayout()
         self.csv_path = QLineEdit()
+        self.csv_path.setText(self.default_csv)
         self.browse_btn = QPushButton("Browse")
         self.browse_btn.clicked.connect(self.browse_csv)
         self.append_chk = QCheckBox("Append")
@@ -342,6 +350,10 @@ class MainWindow(QMainWindow):
             pass
         self.csv_file = None
         self.csv_writer = None
+
+        self.test_index += 1
+        self.default_csv = default_csv_name(self.test_index)
+        self.csv_path.setText(self.default_csv)
 
         self.start_btn.setEnabled(True)
         self.stop_btn.setEnabled(False)
